@@ -1,5 +1,4 @@
 import {spawn} from 'child_process';
-// import readline
 import readline from 'readline';
 
 async function commandRunner(throwErr: boolean = false): Promise<any> {
