@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+echo "Promise rejections cmd (stdout)"
+
+# Throw an error if given the error argument
+if [ "$1" == "error" ]; then
+  >&2 echo "Error thrown from promise-rejections-cmd (stderr)"
+  >&2 echo "Another from promise-rejections-cmd (stderr)"
+  exit 1
+fi
