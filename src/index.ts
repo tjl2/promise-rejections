@@ -4,6 +4,13 @@ import Bugsnag from '@bugsnag/js';
 
 const bugsnagAPIKey = process.env.BUGSNAG_API_KEY || '123456789';
 
+class CustomError extends Error {
+  constructor(action: 'plan' | 'apply', public stderr: string) {
+    super(stderr);
+    this.name = `Terraform ${action}`;
+  }
+}
+
 async function commandRunner(throwErr: boolean = false): Promise<any> {
   const argArr = throwErr ? ['error'] : [];
 
@@ -23,15 +30,15 @@ async function commandRunner(throwErr: boolean = false): Promise<any> {
   });
 
   // Stream any stderr and create Error object.
-  let errLines = [] as string[];
-  let runError: Error = new Error('none');
   const rle = readline.createInterface({input: promiseRejectionCmd.stderr});
+  let errLines = [] as string[];
+  let stderr = '';
   rle.on('line', (line: string) => {
     //console.log(`ERROR STDERR ${line}`);
-    errLines.push(`STDERR ${line}`);
+    errLines.push(`STDERR: ${line}`);
   })
   .on('close', () => {
-    runError.message = errLines.join('\n  ');
+    stderr = errLines.join('\n');
   });
 
   // Return a promise that will reject on error.
@@ -39,7 +46,7 @@ async function commandRunner(throwErr: boolean = false): Promise<any> {
     promiseRejectionCmd.on('close', 
       code => (code === 0 ?
         resolve('RESOLVED I got a close event and command was successful') :
-        reject(runError) // I think this could then be captured by bugsnag.
+        reject(new CustomError('plan', stderr)) // I think this could then be captured by bugsnag.
       )
     );
   });
