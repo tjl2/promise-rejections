@@ -34,7 +34,7 @@ async function commandRunner(throwErr: boolean = false): Promise<any> {
   let errLines = [] as string[];
   let stderr = '';
   rle.on('line', (line: string) => {
-    //console.log(`ERROR STDERR ${line}`);
+    console.error(`ERROR STDERR ${line}`);
     errLines.push(`STDERR: ${line}`);
   })
   .on('close', () => {
@@ -62,7 +62,6 @@ function main() {
       if (error) {
         console.log('Detected error running command - sending to bugsnag');
         Bugsnag.notify(error);
-        console.error(`Here's my error:\n  ${error}`);
       }
     }
   )
@@ -74,7 +73,6 @@ function main() {
         // Here wwould be where we could bugsnag.notify(error);
         console.log('Detected error running command - sending to bugsnag');
         Bugsnag.notify(error);
-        console.error(`Here's my error:\n  ${error}`);
       }
     }
   );
