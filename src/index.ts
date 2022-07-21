@@ -1,5 +1,8 @@
 import {spawn} from 'child_process';
 import readline from 'readline';
+import Bugsnag from '@bugsnag/js';
+
+const bugsnagAPIKey = process.env.BUGSNAG_API_KEY || '123456789';
 
 async function commandRunner(throwErr: boolean = false): Promise<any> {
   const argArr = throwErr ? ['error'] : [];
@@ -43,12 +46,15 @@ async function commandRunner(throwErr: boolean = false): Promise<any> {
 }
 
 function main() {
+  Bugsnag.start(bugsnagAPIKey);
+
   // Running command with no error.
   commandRunner().then(
     (blah) => {console.log(blah);},
     error => {
       if (error) {
-        console.log('Detected error running command:');
+        console.log('Detected error running command - sending to bugsnag');
+        Bugsnag.notify(error);
         console.error(`Here's my error:\n  ${error}`);
       }
     }
@@ -59,7 +65,8 @@ function main() {
     error => {
       if (error) {
         // Here wwould be where we could bugsnag.notify(error);
-        console.log('Detected error running command:');
+        console.log('Detected error running command - sending to bugsnag');
+        Bugsnag.notify(error);
         console.error(`Here's my error:\n  ${error}`);
       }
     }
