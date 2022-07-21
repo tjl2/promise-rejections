@@ -3,7 +3,10 @@ echo "Promise rejections cmd (stdout)"
 
 # Throw an error if given the error argument
 if [ "$1" == "error" ]; then
-  >&2 echo "Error thrown from promise-rejections-cmd (stderr)"
-  >&2 echo "Another from promise-rejections-cmd (stderr)"
+  ctr=0
+  while [[ $ctr -lt 500 ]]; do
+    ctr=$((ctr+1))
+    >&2 echo "Line $ctr: An error message"
+  done
   exit 1
 fi
